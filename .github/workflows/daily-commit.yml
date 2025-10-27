@@ -4,7 +4,11 @@ on:
   schedule:
     # Runs every day at 09:30 AM IST (04:00 UTC)
     - cron: "30 4 * * *"
-  workflow_dispatch:  # allows manual trigger
+  workflow_dispatch:
+
+permissions:
+  contents: write     # ✅ allow git push
+  actions: read
 
 jobs:
   auto_commit:
@@ -13,6 +17,8 @@ jobs:
     steps:
       - name: 🧠 Checkout Repository
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: ✍️ Update daily log (by 23f2001886@ds.study.iitm.ac.in)
         run: |
@@ -20,5 +26,5 @@ jobs:
           git config --global user.name "DevSync Bot"
           git config --global user.email "23f2001886@ds.study.iitm.ac.in"
           git add daily_update.txt
-          git commit -m "Automated daily commit on $(date)"
+          git commit -m "Automated daily commit on $(date)" || echo "No changes to commit"
           git push
